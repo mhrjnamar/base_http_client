@@ -29,10 +29,10 @@ class BaseClient {
       required String api,
       required dynamic payloadObj}) async {
     var uri = Uri.parse(baseUrl + api);
-    var payload = json.decode(payloadObj);
+    var payload = json.encode(payloadObj);
     try {
       var response = await http
-          .post(uri, body: payloadObj)
+          .post(uri, body: payload)
           .timeout(Duration(seconds: TIME_OUT_DURATION));
       return _processResponse(response);
     } on SocketException {
@@ -51,7 +51,9 @@ class BaseClient {
       case 200:
         var responseJson = utf8.decode(response.bodyBytes);
         return responseJson;
-        break;
+      case 201:
+        var responseJson = utf8.decode(response.bodyBytes);
+        return responseJson;
       case 400:
         throw BadRequestException(
             message: utf8.decode(response.bodyBytes),
